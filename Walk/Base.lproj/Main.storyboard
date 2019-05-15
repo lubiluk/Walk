@@ -65,7 +65,11 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" id="VF1-rJ-8qS">
-                        <barButtonItem key="rightBarButtonItem" title="Start" id="nKi-Lu-3Qa"/>
+                        <barButtonItem key="rightBarButtonItem" title="Start" id="nKi-Lu-3Qa">
+                            <connections>
+                                <action selector="toggleWalk:" destination="dGO-CH-wuc" id="ud6-91-dar"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jPB-3u-QuP" userLabel="First Responder" sceneMemberID="firstResponder"/>

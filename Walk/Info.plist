@@ -41,5 +41,9 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Location is needed to track your walk.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Location is needed to track your walk.</string>
 </dict>
 </plist>

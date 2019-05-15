@@ -9,17 +9,53 @@
 import UIKit
 
 class PhotosTableViewController: UITableViewController {
+    let walkController = WalkController()
+    var token: NSObjectProtocol?
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem
+        let center = NotificationCenter.default
+        token = center.addObserver(forName: WalkController.stateDidChangeNotification, object: walkController, queue: .main) { [unowned self] (notification) in
+            self.updateViews()
+        }
     }
+    
+    deinit {
+        if let token = token {
+            let center = NotificationCenter.default
+            center.removeObserver(token)
+        }
+    }
+    
+    private func updateViews() {
+        
+    }
+    
+    private func showAuthorizationPopup() {
+        
+    }
+    
+    // MARK: - Actions
 
+    @IBAction func toggleWalk(_ sender: Any) {
+        switch walkController.authorizationStatus {
+        case .notDetermined:
+            walkController.requestAuthorization()
+        case .denied:
+            showAuthorizationPopup()
+        default:
+            ()
+        }
+        
+        switch walkController.state {
+        case .stopped:
+            walkController.startTracking()
+        case .running:
+            walkController.stopTracking()
+        }
+    }
+    
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
