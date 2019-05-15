@@ -7,8 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		932013E3228CAC300012E0EC /* PhotoTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 932013E2228CAC300012E0EC /* PhotoTableViewCell.swift */; };
+		932013E5228CAC510012E0EC /* PhotosTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 932013E4228CAC510012E0EC /* PhotosTableViewController.swift */; };
 		935DC491228B76C000A7E175 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 935DC490228B76C000A7E175 /* AppDelegate.swift */; };
-		935DC493228B76C000A7E175 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 935DC492228B76C000A7E175 /* ViewController.swift */; };
 		935DC496228B76C000A7E175 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 935DC494228B76C000A7E175 /* Main.storyboard */; };
 		935DC499228B76C000A7E175 /* Walk.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 935DC497228B76C000A7E175 /* Walk.xcdatamodeld */; };
 		935DC49B228B76C100A7E175 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 935DC49A228B76C100A7E175 /* Assets.xcassets */; };
@@ -16,9 +17,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		932013E2228CAC300012E0EC /* PhotoTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoTableViewCell.swift; sourceTree = "<group>"; };
+		932013E4228CAC510012E0EC /* PhotosTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosTableViewController.swift; sourceTree = "<group>"; };
 		935DC48D228B76C000A7E175 /* Walk.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Walk.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		935DC490228B76C000A7E175 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		935DC492228B76C000A7E175 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		935DC495228B76C000A7E175 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		935DC498228B76C000A7E175 /* Walk.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Walk.xcdatamodel; sourceTree = "<group>"; };
 		935DC49A228B76C100A7E175 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -57,10 +59,11 @@
 			isa = PBXGroup;
 			children = (
 				935DC490228B76C000A7E175 /* AppDelegate.swift */,
-				935DC492228B76C000A7E175 /* ViewController.swift */,
+				932013E2228CAC300012E0EC /* PhotoTableViewCell.swift */,
+				932013E4228CAC510012E0EC /* PhotosTableViewController.swift */,
 				935DC494228B76C000A7E175 /* Main.storyboard */,
-				935DC49A228B76C100A7E175 /* Assets.xcassets */,
 				935DC49C228B76C100A7E175 /* LaunchScreen.storyboard */,
+				935DC49A228B76C100A7E175 /* Assets.xcassets */,
 				935DC49F228B76C100A7E175 /* Info.plist */,
 				935DC497228B76C000A7E175 /* Walk.xcdatamodeld */,
 			);
@@ -138,8 +141,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				932013E3228CAC300012E0EC /* PhotoTableViewCell.swift in Sources */,
 				935DC499228B76C000A7E175 /* Walk.xcdatamodeld in Sources */,
-				935DC493228B76C000A7E175 /* ViewController.swift in Sources */,
+				932013E5228CAC510012E0EC /* PhotosTableViewController.swift in Sources */,
 				935DC491228B76C000A7E175 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -296,7 +300,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = io.github.lubiluk.Walk;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -314,7 +318,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = io.github.lubiluk.Walk;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
