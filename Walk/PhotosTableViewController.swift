@@ -91,6 +91,7 @@ class PhotosTableViewController: UITableViewController {
         case .stopped:
             askForPermissionIfNeeded()
             photoControlller.deleteAllPhotos()
+            tableView.reloadData()
             lastLocationController.startTracking()
         case .running:
             lastLocationController.stopTracking()

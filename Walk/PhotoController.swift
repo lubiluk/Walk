@@ -74,7 +74,7 @@ class PhotoController {
             return
         }
         
-        let searchUrl = "https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=\(apiKey)&sort=interestingness-desc&content_type=1&lat=\(location.coordinate.latitude)&lon=\(location.coordinate.longitude)&extras=url_o&per_page=1&page=1&format=json&nojsoncallback=1"
+        let searchUrl = "https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=\(apiKey)&content_type=1&lat=\(location.coordinate.latitude)&lon=\(location.coordinate.longitude)&extras=url_o&per_page=1&page=1&format=json&nojsoncallback=1"
         
         guard let url = URL(string: searchUrl) else {
             completion(nil, TaskError.searchUrl)
@@ -157,6 +157,8 @@ class PhotoController {
                 task.cancel()
             }
         }
+        
+        photos.removeAll()
         
         do {
             let fileManager = FileManager.default
