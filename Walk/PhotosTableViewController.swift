@@ -9,118 +9,110 @@
 import UIKit
 
 class PhotosTableViewController: UITableViewController {
-    let walkController = WalkController()
-    var token: NSObjectProtocol?
+    private let permissionController = PermissionController()
+    private let lastLocationController = LastLocationController()
+    private let photoControlller = PhotoController()
+    private var tokens: [NSObjectProtocol]?
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        tableView.rowHeight = view.bounds.width * 0.75 // 4:3 aspect
 
         let center = NotificationCenter.default
-        token = center.addObserver(forName: WalkController.stateDidChangeNotification, object: walkController, queue: .main) { [unowned self] (notification) in
+        let locationToken = center.addObserver(forName: LastLocationController.stateDidChangeNotification, object: lastLocationController, queue: .main) { [unowned self] (notification) in
             self.updateViews()
         }
+        let lastLocationToken = center.addObserver(forName: LastLocationController.lastLocationDidChangeNotification, object: lastLocationController, queue: .main) { [unowned self] (notification) in
+            guard let lastLocationController = notification.object as? LastLocationController,
+                let location = lastLocationController.lastLocation else {
+                    return
+            }
+            
+            self.photoControlller.addPhotoForLocation(location)
+        }
+        let photoToken = center.addObserver(forName: PhotoController.photoDownloadDidFinishNotification, object: photoControlller, queue: .main) { [unowned self] (notification) in
+            let indexPath = IndexPath(row: 0, section: 0)
+            self.tableView.insertRows(at: [indexPath], with: .top)
+        }
+        
+        tokens = [locationToken, lastLocationToken, photoToken]
+        
+        updateViews()
     }
     
     deinit {
-        if let token = token {
+        if let tokens = tokens {
             let center = NotificationCenter.default
-            center.removeObserver(token)
+            
+            for token in tokens {
+                center.removeObserver(token)
+            }
         }
     }
     
     private func updateViews() {
-        
+        switch lastLocationController.state {
+        case .running:
+            navigationItem.rightBarButtonItem?.title = "Stop"
+        case .stopped:
+            navigationItem.rightBarButtonItem?.title = "Start"
+        }
     }
     
     private func showAuthorizationPopup() {
+        let alert = UIAlertController(title: "Location Services",
+                                      message: "You have disabled location services for this app. Pictures won't load until you turn it back on.", preferredStyle: .alert)
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        alert.addAction(cancelAction)
+        let settingsAction = UIAlertAction(title: "Settings", style: .default) { (action) in
+            UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
+        }
+        alert.addAction(settingsAction)
         
+        present(alert, ani)
     }
     
-    // MARK: - Actions
-
-    @IBAction func toggleWalk(_ sender: Any) {
-        switch walkController.authorizationStatus {
+    private func askForPermissionIfNeeded() {
+        switch permissionController.permission {
         case .notDetermined:
-            walkController.requestAuthorization()
+            permissionController.requestPermission()
         case .denied:
             showAuthorizationPopup()
         default:
             ()
         }
-        
-        switch walkController.state {
+    }
+    
+    // MARK: - Actions
+
+    @IBAction func toggleWalk(_ sender: Any) {
+        switch lastLocationController.state {
         case .stopped:
-            walkController.startTracking()
+            askForPermissionIfNeeded()
+            photoControlller.deleteAllPhotos()
+            lastLocationController.startTracking()
         case .running:
-            walkController.stopTracking()
+            lastLocationController.stopTracking()
         }
     }
     
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
-        return 0
+        return 1
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of rows
-        return 0
+        return photoControlller.photos.count
     }
 
-    /*
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath)
-
-        // Configure the cell...
+        let cell = tableView.dequeueReusableCell(withIdentifier: "PhotoCell", for: indexPath) as! PhotoTableViewCell
+        let url = photoControlller.photos.reversed()[indexPath.row]
+        
+        cell.photoImageView.image = UIImage(contentsOfFile: url.relativePath)
 
         return cell
     }
-    */
-
-    /*
-    // Override to support conditional editing of the table view.
-    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the specified item to be editable.
-        return true
-    }
-    */
-
-    /*
-    // Override to support editing the table view.
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-            // Delete the row from the data source
-            tableView.deleteRows(at: [indexPath], with: .fade)
-        } else if editingStyle == .insert {
-            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-        }    
-    }
-    */
-
-    /*
-    // Override to support rearranging the table view.
-    override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
-
-    }
-    */
-
-    /*
-    // Override to support conditional rearranging of the table view.
-    override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the item to be re-orderable.
-        return true
-    }
-    */
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }
