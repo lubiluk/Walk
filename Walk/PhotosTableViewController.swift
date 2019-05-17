@@ -70,7 +70,7 @@ class PhotosTableViewController: UITableViewController {
         }
         alert.addAction(settingsAction)
         
-        present(alert, ani)
+        present(alert, animated: true)
     }
     
     private func askForPermissionIfNeeded() {
