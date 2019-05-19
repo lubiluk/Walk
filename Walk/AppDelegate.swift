@@ -17,6 +17,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        guard let navigationController = window?.rootViewController as? UINavigationController,
+            let viewController = navigationController.viewControllers.first as? PhotosTableViewController else {
+            fatalError("Can't get root view controller")
+        }
+        
+        viewController.managedObjectContext = persistentContainer.viewContext
+        
         return true
     }
 

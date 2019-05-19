@@ -7,52 +7,59 @@
 //
 
 import UIKit
+import CoreData
 
 class PhotosTableViewController: UITableViewController {
     private let permissionController = PermissionController()
-    private let lastLocationController = LastLocationController()
-    private let photoControlller = PhotoController()
-    private var tokens: [NSObjectProtocol]?
+    private let checkpointController = CheckpointController()
+    private let photoSearchController = PhotoSearchController()
+    private let photoDownloadController = PhotoDownloadController()
+    private var observer: NSObjectProtocol?
+    
+    var managedObjectContext: NSManagedObjectContext!
+    
+    lazy var fetchedResultsController: NSFetchedResultsController<Checkpoint> = {
+        let request = NSFetchRequest<Checkpoint>(entityName: "Checkpoint")
+        request.predicate = NSPredicate(format: "isDownloaded = YES")
+        let sort = NSSortDescriptor(key: "date", ascending: false)
+        request.sortDescriptors = [sort]
+        
+        let controller = NSFetchedResultsController(fetchRequest: request, managedObjectContext: managedObjectContext, sectionNameKeyPath: nil, cacheName: nil)
+        controller.delegate = self
+        
+        do {
+            try controller.performFetch()
+        } catch {
+            fatalError("Failed to initialize FetchedResultsController: \(error)")
+        }
+        
+        return controller
+    }()
 
+    deinit {
+        if let observer = observer {
+            NotificationCenter.default.removeObserver(observer)
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         tableView.rowHeight = view.bounds.width * 0.75 // 4:3 aspect
-
-        let center = NotificationCenter.default
-        let locationToken = center.addObserver(forName: LastLocationController.stateDidChangeNotification, object: lastLocationController, queue: .main) { [unowned self] (notification) in
-            self.updateViews()
-        }
-        let lastLocationToken = center.addObserver(forName: LastLocationController.lastLocationDidChangeNotification, object: lastLocationController, queue: .main) { [unowned self] (notification) in
-            guard let lastLocationController = notification.object as? LastLocationController,
-                let location = lastLocationController.lastLocation else {
-                    return
-            }
-            
-            self.photoControlller.addPhotoForLocation(location)
-        }
-        let photoToken = center.addObserver(forName: PhotoController.photoDownloadDidFinishNotification, object: photoControlller, queue: .main) { [unowned self] (notification) in
-            let indexPath = IndexPath(row: 0, section: 0)
-            self.tableView.insertRows(at: [indexPath], with: .top)
-        }
-        
-        tokens = [locationToken, lastLocationToken, photoToken]
         
         updateViews()
-    }
-    
-    deinit {
-        if let tokens = tokens {
-            let center = NotificationCenter.default
-            
-            for token in tokens {
-                center.removeObserver(token)
-            }
-        }
+        
+        checkpointController.managedObjectContext = managedObjectContext
+        photoSearchController.managedObjectContext = managedObjectContext
+        photoDownloadController.managedObjectContext = managedObjectContext
+        
+        observer = NotificationCenter.default.addObserver(forName: .CheckpointControllerStateDidChange, object: checkpointController, queue: .main, using: { _ in
+            self.updateViews()
+        })
     }
     
     private func updateViews() {
-        switch lastLocationController.state {
+        switch checkpointController.state {
         case .running:
             navigationItem.rightBarButtonItem?.title = "Stop"
         case .stopped:
@@ -87,33 +94,90 @@ class PhotosTableViewController: UITableViewController {
     // MARK: - Actions
 
     @IBAction func toggleWalk(_ sender: Any) {
-        switch lastLocationController.state {
+        switch checkpointController.state {
         case .stopped:
             askForPermissionIfNeeded()
-            photoControlller.deleteAllPhotos()
+            checkpointController.deleteAllCheckpoints()
+            photoDownloadController.deleteAllPhotos()
             tableView.reloadData()
-            lastLocationController.startTracking()
+            
+            checkpointController.startTracking()
+            photoSearchController.startSearching()
+            photoDownloadController.startDownloading()
         case .running:
-            lastLocationController.stopTracking()
+            checkpointController.stopTracking()
+            photoSearchController.stopSearching()
+            photoDownloadController.stopDownloading()
         }
     }
     
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
+        return fetchedResultsController.sections!.count
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return photoControlller.photos.count
+        guard let sections = fetchedResultsController.sections else {
+            fatalError("No sections in fetchedResultsController")
+        }
+        
+        let sectionInfo = sections[section]
+        
+        return sectionInfo.numberOfObjects
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "PhotoCell", for: indexPath) as! PhotoTableViewCell
-        let url = photoControlller.photos.reversed()[indexPath.row]
+        let checkpoint = fetchedResultsController.object(at: indexPath)
         
-        cell.photoImageView.image = UIImage(contentsOfFile: url.relativePath)
-
+        if let path = checkpoint.localPath {
+            cell.photoImageView.image = UIImage(contentsOfFile: path)
+        } else {
+            // Empty photo indicates error. In the future we could add an option to retry download of failed photos.
+            cell.photoImageView.image = nil
+        }
+        
         return cell
+    }
+}
+
+extension PhotosTableViewController: NSFetchedResultsControllerDelegate {
+    func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        tableView.beginUpdates()
+    }
+    
+    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange sectionInfo: NSFetchedResultsSectionInfo, atSectionIndex sectionIndex: Int, for type: NSFetchedResultsChangeType) {
+        switch type {
+        case .insert:
+            tableView.insertSections(IndexSet(integer: sectionIndex), with: .fade)
+        case .delete:
+            tableView.deleteSections(IndexSet(integer: sectionIndex), with: .fade)
+        case .move:
+            break
+        case .update:
+            break
+        @unknown default:
+            break
+        }
+    }
+    
+    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
+        switch type {
+        case .insert:
+            tableView.insertRows(at: [newIndexPath!], with: .fade)
+        case .delete:
+            tableView.deleteRows(at: [indexPath!], with: .fade)
+        case .update:
+            tableView.reloadRows(at: [indexPath!], with: .fade)
+        case .move:
+            tableView.moveRow(at: indexPath!, to: newIndexPath!)
+        @unknown default:
+            break
+        }
+    }
+    
+    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        tableView.endUpdates()
     }
 }
