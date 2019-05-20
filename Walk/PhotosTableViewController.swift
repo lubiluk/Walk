@@ -14,13 +14,13 @@ class PhotosTableViewController: UITableViewController {
     private let checkpointController = CheckpointController()
     private let photoSearchController = PhotoSearchController()
     private let photoDownloadController = PhotoDownloadController()
-    private var observer: NSObjectProtocol?
+    private var observers = [NSObjectProtocol]()
     
     var managedObjectContext: NSManagedObjectContext!
     
     lazy var fetchedResultsController: NSFetchedResultsController<Checkpoint> = {
-        let request = NSFetchRequest<Checkpoint>(entityName: "Checkpoint")
-        request.predicate = NSPredicate(format: "isDownloaded = YES")
+        let request = NSFetchRequest<Checkpoint>(entityName: Checkpoint.entityName)
+        request.predicate = NSPredicate(format: "localPath != nil")
         let sort = NSSortDescriptor(key: "date", ascending: false)
         request.sortDescriptors = [sort]
         
@@ -37,7 +37,7 @@ class PhotosTableViewController: UITableViewController {
     }()
 
     deinit {
-        if let observer = observer {
+        for observer in observers {
             NotificationCenter.default.removeObserver(observer)
         }
     }
@@ -53,9 +53,17 @@ class PhotosTableViewController: UITableViewController {
         photoSearchController.managedObjectContext = managedObjectContext
         photoDownloadController.managedObjectContext = managedObjectContext
         
-        observer = NotificationCenter.default.addObserver(forName: .CheckpointControllerStateDidChange, object: checkpointController, queue: .main, using: { _ in
+        let controllerObserver = NotificationCenter.default.addObserver(forName: .CheckpointControllerStateDidChange, object: checkpointController, queue: .main, using: { _ in
             self.updateViews()
         })
+        
+        // Retry searches and downloads that may fail due to network problems
+        let appObserver = NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main) { [unowned self] _ in
+            self.photoSearchController.retrySearches()
+            self.photoDownloadController.retryDownloads()
+        }
+        
+        observers = [controllerObserver, appObserver]
     }
     
     private func updateViews() {

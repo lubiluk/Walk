@@ -40,7 +40,7 @@ class CheckpointController: NSObject {
             }
             
             DispatchQueue.main.async {
-                let checkpoint = NSEntityDescription.insertNewObject(forEntityName: "Checkpoint", into: self.managedObjectContext) as! Checkpoint
+                let checkpoint = Checkpoint.insertIntoContext(self.managedObjectContext)
                 
                 checkpoint.date = Date()
                 checkpoint.latitude = location.coordinate.latitude
@@ -77,13 +77,10 @@ class CheckpointController: NSObject {
     }
     
     func deleteAllCheckpoints() {
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Checkpoint")
-        let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
-        
         do {
-            try managedObjectContext.execute(deleteRequest)
+            try Checkpoint.deleteAllFromContext(managedObjectContext)
         } catch {
-            // TODO: handle the error
+            fatalError("Failed to delete local objects")
         }
     }
 }
@@ -94,7 +91,7 @@ extension CheckpointController: CLLocationManagerDelegate {
             return
         }
         
-        if location.timestamp.timeIntervalSinceNow > 60 {
+        if location.timestamp.timeIntervalSinceNow > 10 {
             // Drop too old location
             return
         }

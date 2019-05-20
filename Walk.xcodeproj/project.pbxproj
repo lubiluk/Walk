@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9316C35E2293537500A7A179 /* Checkpoint+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9316C35C2293537500A7A179 /* Checkpoint+CoreDataClass.swift */; };
 		932013E3228CAC300012E0EC /* PhotoTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 932013E2228CAC300012E0EC /* PhotoTableViewCell.swift */; };
 		932013E5228CAC510012E0EC /* PhotosTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 932013E4228CAC510012E0EC /* PhotosTableViewController.swift */; };
 		932D1D1E2290C0CD00F26C3D /* CheckpointController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 932D1D1D2290C0CD00F26C3D /* CheckpointController.swift */; };
@@ -21,6 +22,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		9316C35C2293537500A7A179 /* Checkpoint+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Checkpoint+CoreDataClass.swift"; sourceTree = "<group>"; };
 		932013E2228CAC300012E0EC /* PhotoTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoTableViewCell.swift; sourceTree = "<group>"; };
 		932013E4228CAC510012E0EC /* PhotosTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosTableViewController.swift; sourceTree = "<group>"; };
 		932D1D1D2290C0CD00F26C3D /* CheckpointController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CheckpointController.swift; sourceTree = "<group>"; };
@@ -66,6 +68,7 @@
 		935DC48F228B76C000A7E175 /* Walk */ = {
 			isa = PBXGroup;
 			children = (
+				9316C35C2293537500A7A179 /* Checkpoint+CoreDataClass.swift */,
 				935DC490228B76C000A7E175 /* AppDelegate.swift */,
 				9387446F228E03490042BFFA /* PermissionController.swift */,
 				932D1D1D2290C0CD00F26C3D /* CheckpointController.swift */,
@@ -162,6 +165,7 @@
 				932013E3228CAC300012E0EC /* PhotoTableViewCell.swift in Sources */,
 				935DC499228B76C000A7E175 /* Walk.xcdatamodeld in Sources */,
 				932D1D222290C34D00F26C3D /* PhotoSearchController.swift in Sources */,
+				9316C35E2293537500A7A179 /* Checkpoint+CoreDataClass.swift in Sources */,
 				932013E5228CAC510012E0EC /* PhotosTableViewController.swift in Sources */,
 				935DC491228B76C000A7E175 /* AppDelegate.swift in Sources */,
 				932D1D202290C30300F26C3D /* PhotoDownloadController.swift in Sources */,

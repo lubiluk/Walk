@@ -22,18 +22,7 @@ class PhotoDownloadController {
     func startDownloading() {
         let center = NotificationCenter.default
         center.addObserver(forName: Notification.Name.NSManagedObjectContextObjectsDidChange, object: nil, queue: .main) { [unowned self] (notification) in
-            let request = NSFetchRequest<Checkpoint>(entityName: "Checkpoint")
-            request.predicate = NSPredicate(format: "isSearched = YES AND isDownloaded = NO")
-            
-            do {
-                let checkpoints = try self.managedObjectContext.fetch(request)
-                
-                for checkpoint in checkpoints {
-                    self.downloadPhotoForCheckpoint(checkpoint)
-                }
-            } catch {
-                self.failWithError(.checkpoint)
-            }
+            self.download()
         }
     }
     
@@ -52,75 +41,49 @@ class PhotoDownloadController {
         }
     }
     
-    enum DownloadError: Error {
-        case request
-        case responseStatus
-        case jsonParsing
-        case fileSaving
-        case searchUrl
-        case photoUrl
-        case tempUrl
-        case apiKey
-        case checkpoint
+    func retryDownloads() {
+        download()
+    }
+    
+    private func download() {
+        let request = NSFetchRequest<Checkpoint>(entityName: Checkpoint.entityName)
+        request.predicate = NSPredicate(format: "remoteUrl != nil AND localPath = nil AND isFailed = NO")
         
-        var description: String {
-            switch self {
-            case .request:
-                return "Download request failed."
-            case .responseStatus:
-                return "Server responded with non 200 status code."
-            case .jsonParsing:
-                return "Unable to parse response JSON."
-            case .fileSaving:
-                return "Unable to save file."
-            case .searchUrl:
-                return "Invalid search URL."
-            case .photoUrl:
-                return "Invalid photo URL."
-            case .tempUrl:
-                return "Invalid temporary file URL."
-            case .apiKey:
-                return "Missing API key."
-            case .checkpoint:
-                return "Failed to fetch checkpoint."
+        do {
+            let checkpoints = try self.managedObjectContext.fetch(request)
+            
+            for checkpoint in checkpoints {
+                self.downloadPhotoForCheckpoint(checkpoint)
             }
+        } catch {
+            fatalError("Failed to query local objects")
         }
     }
-    
-    private func failWithError(_ error: DownloadError, underlyingError: Error? = nil) {
-        
-    }
-    
+
     private func downloadPhotoForCheckpoint(_ checkpoint: Checkpoint) {        
         guard let stringUrl = checkpoint.remoteUrl, let remoteUrl = URL(string: stringUrl) else {
-            failWithError(.photoUrl)
+            checkpoint.isFailed = true
             return
         }
         
-        let task = URLSession.shared.downloadTask(with: remoteUrl) { [weak self] (url, response, error) in
-            guard let strongSelf = self else {
-                return
-            }
-            
-            defer {
-                // Indicate that the download has been performed no matter if successful
-                DispatchQueue.main.async {
-                    checkpoint.isDownloaded = true
-                }
-            }
-                
+        let task = URLSession.shared.downloadTask(with: remoteUrl) { (url, response, error) in
             if let error = error {
-                strongSelf.failWithError(.request, underlyingError: error)
+                if let error = error as NSError?, error.domain == NSURLErrorDomain && error.code == NSURLErrorNotConnectedToInternet {
+                    // Try again later
+                    return
+                }
+                
+                checkpoint.isFailed = true
                 return
             }
             
             guard let response = response as? HTTPURLResponse, response.statusCode == 200 else {
-                strongSelf.failWithError(.responseStatus)
+                checkpoint.isFailed = true
                 return
             }
             
             guard let url = url else {
-                strongSelf.failWithError(.tempUrl)
+                checkpoint.isFailed = true
                 return
             }
             
@@ -143,7 +106,7 @@ class PhotoDownloadController {
                     checkpoint.localPath = savedUrl.path
                 }
             } catch {
-               strongSelf.failWithError(.fileSaving)
+               checkpoint.isFailed = true
             }
         }
         
