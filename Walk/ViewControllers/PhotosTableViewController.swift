@@ -46,6 +46,7 @@ class PhotosTableViewController: UITableViewController {
         super.viewDidLoad()
         
         tableView.rowHeight = view.bounds.width * 0.75 // 4:3 aspect
+        tableView.contentInset = UIEdgeInsets(top: 4, left: 0, bottom: 4, right: 0)
         
         updateViews()
         
@@ -148,6 +149,9 @@ class PhotosTableViewController: UITableViewController {
             cell.photoImageView.image = nil
         }
         
+//        cell.increasedTopMargin = (indexPath.row == 0)
+//        cell.increasedBottomMargin = (indexPath.row == fetchedResultsController.fetchedObjects!.count - 1)
+        
         return cell
     }
 }
@@ -175,7 +179,7 @@ extension PhotosTableViewController: NSFetchedResultsControllerDelegate {
     func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
         switch type {
         case .insert:
-            tableView.insertRows(at: [newIndexPath!], with: .top)
+            tableView.insertRows(at: [newIndexPath!], with: .fade)
         case .delete:
             tableView.deleteRows(at: [indexPath!], with: .fade)
         case .update:
