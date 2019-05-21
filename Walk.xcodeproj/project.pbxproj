@@ -19,6 +19,7 @@
 		935DC49B228B76C100A7E175 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 935DC49A228B76C100A7E175 /* Assets.xcassets */; };
 		935DC49E228B76C100A7E175 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 935DC49C228B76C100A7E175 /* LaunchScreen.storyboard */; };
 		93874470228E03490042BFFA /* PermissionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9387446F228E03490042BFFA /* PermissionController.swift */; };
+		93A6935C2294083900D3D544 /* Debouncer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93A6935B2294083900D3D544 /* Debouncer.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,6 +37,7 @@
 		935DC49D228B76C100A7E175 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		935DC49F228B76C100A7E175 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9387446F228E03490042BFFA /* PermissionController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PermissionController.swift; sourceTree = "<group>"; };
+		93A6935B2294083900D3D544 /* Debouncer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Debouncer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,14 +70,11 @@
 		935DC48F228B76C000A7E175 /* Walk */ = {
 			isa = PBXGroup;
 			children = (
-				9316C35C2293537500A7A179 /* Checkpoint+CoreDataClass.swift */,
+				93A6935D2294083E00D3D544 /* Common */,
+				93A6935E2294084500D3D544 /* Model */,
+				93A6935F2294085000D3D544 /* Controllers */,
+				93A693602294086000D3D544 /* ViewControllers */,
 				935DC490228B76C000A7E175 /* AppDelegate.swift */,
-				9387446F228E03490042BFFA /* PermissionController.swift */,
-				932D1D1D2290C0CD00F26C3D /* CheckpointController.swift */,
-				932D1D212290C34C00F26C3D /* PhotoSearchController.swift */,
-				932D1D1F2290C30300F26C3D /* PhotoDownloadController.swift */,
-				932013E2228CAC300012E0EC /* PhotoTableViewCell.swift */,
-				932013E4228CAC510012E0EC /* PhotosTableViewController.swift */,
 				935DC494228B76C000A7E175 /* Main.storyboard */,
 				935DC49C228B76C100A7E175 /* LaunchScreen.storyboard */,
 				935DC49A228B76C100A7E175 /* Assets.xcassets */,
@@ -83,6 +82,42 @@
 				935DC497228B76C000A7E175 /* Walk.xcdatamodeld */,
 			);
 			path = Walk;
+			sourceTree = "<group>";
+		};
+		93A6935D2294083E00D3D544 /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				93A6935B2294083900D3D544 /* Debouncer.swift */,
+			);
+			path = Common;
+			sourceTree = "<group>";
+		};
+		93A6935E2294084500D3D544 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				9316C35C2293537500A7A179 /* Checkpoint+CoreDataClass.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		93A6935F2294085000D3D544 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				9387446F228E03490042BFFA /* PermissionController.swift */,
+				932D1D1D2290C0CD00F26C3D /* CheckpointController.swift */,
+				932D1D212290C34C00F26C3D /* PhotoSearchController.swift */,
+				932D1D1F2290C30300F26C3D /* PhotoDownloadController.swift */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		93A693602294086000D3D544 /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				932013E2228CAC300012E0EC /* PhotoTableViewCell.swift */,
+				932013E4228CAC510012E0EC /* PhotosTableViewController.swift */,
+			);
+			path = ViewControllers;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -164,6 +199,7 @@
 				932D1D1E2290C0CD00F26C3D /* CheckpointController.swift in Sources */,
 				932013E3228CAC300012E0EC /* PhotoTableViewCell.swift in Sources */,
 				935DC499228B76C000A7E175 /* Walk.xcdatamodeld in Sources */,
+				93A6935C2294083900D3D544 /* Debouncer.swift in Sources */,
 				932D1D222290C34D00F26C3D /* PhotoSearchController.swift in Sources */,
 				9316C35E2293537500A7A179 /* Checkpoint+CoreDataClass.swift in Sources */,
 				932013E5228CAC510012E0EC /* PhotosTableViewController.swift in Sources */,

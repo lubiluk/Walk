@@ -33,6 +33,7 @@ class CheckpointController: NSObject {
     var managedObjectContext: NSManagedObjectContext!
     
     private let locationManager = CLLocationManager()
+    
     private var lastLocation: CLLocation? {
         didSet {
             guard let location = lastLocation else {
@@ -48,6 +49,8 @@ class CheckpointController: NSObject {
             }
         }
     }
+    
+    private let debouncer = Debouncer(delay: 3.0)
     
     override init() {
         super.init()
@@ -96,15 +99,15 @@ extension CheckpointController: CLLocationManagerDelegate {
             return
         }
         
-        guard let lastLocation = lastLocation else {
-            // If it's the first location take it as it is
-            self.lastLocation = location
+        if lastLocation == nil {
+            // An attempt to let the location settle down before using it
+            debouncer.schedule { [unowned self] in
+                self.lastLocation = location
+            }
+            
             return
         }
         
-        // Locations must be distict
-        if location.distance(from: lastLocation) > 80 {
-            self.lastLocation = location
-        }
+        self.lastLocation = location
     }
 }
