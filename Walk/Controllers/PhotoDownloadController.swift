@@ -14,6 +14,7 @@ class PhotoDownloadController {
     var managedObjectContext: NSManagedObjectContext!
     
     private var observer: NSObjectProtocol?
+    private var runningTasks = [URL:URLSessionDownloadTask]()
     
     deinit {
         stopDownloading()
@@ -31,13 +32,8 @@ class PhotoDownloadController {
             NotificationCenter.default.removeObserver(observer)
         }
         
-        // A bit naive but in this app this there are no other download tasks
-        URLSession.shared.getAllTasks { (tasks) in
-            for task in tasks {
-                if task is URLSessionDownloadTask {
-                    task.cancel()
-                }
-            }
+        for task in runningTasks.values {
+            task.cancel()
         }
     }
     
@@ -66,7 +62,15 @@ class PhotoDownloadController {
             return
         }
         
-        let task = URLSession.shared.downloadTask(with: remoteUrl) { (url, response, error) in
+        if runningTasks[remoteUrl] != nil {
+            return
+        }
+        
+        let task = URLSession.shared.downloadTask(with: remoteUrl) { [weak self] (url, response, error) in
+            guard let strongSelf = self else {
+                return
+            }
+            
             if let error = error {
                 if let error = error as NSError?, error.domain == NSURLErrorDomain && error.code == NSURLErrorNotConnectedToInternet {
                     // Network unavailable, let's try again later
@@ -105,12 +109,15 @@ class PhotoDownloadController {
                 DispatchQueue.main.async {
                     checkpoint.localPath = savedUrl.path
                 }
+                
+                strongSelf.runningTasks[remoteUrl] = nil
             } catch {
                checkpoint.isFailed = true
             }
         }
         
         task.resume()
+        runningTasks[remoteUrl] = task
     }
     
     func deleteAllPhotos() {

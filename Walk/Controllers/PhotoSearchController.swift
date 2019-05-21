@@ -14,6 +14,7 @@ class PhotoSearchController {
     var managedObjectContext: NSManagedObjectContext!
     
     private var observer: NSObjectProtocol?
+    private var runningTasks = [URL:URLSessionDataTask]()
     
     deinit {
         stopSearching()
@@ -30,13 +31,8 @@ class PhotoSearchController {
             NotificationCenter.default.removeObserver(observer)
         }
         
-        // A bit naive but in this app this there are no other data tasks
-        URLSession.shared.getAllTasks { (tasks) in
-            for task in tasks {
-                if task is URLSessionDataTask {
-                    task.cancel()
-                }
-            }
+        for task in runningTasks.values {
+            task.cancel()
         }
     }
     
@@ -71,7 +67,15 @@ class PhotoSearchController {
             return
         }
         
-        let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
+        if runningTasks[url] != nil {
+            return
+        }
+        
+        let task = URLSession.shared.dataTask(with: url) { [weak self] (data, response, error) in
+            guard let strongSelf = self else {
+                return
+            }
+            
             guard error == nil else {
                 if let error = error as NSError?, error.domain == NSURLErrorDomain && error.code == NSURLErrorNotConnectedToInternet {
                     // Try again later
@@ -101,8 +105,11 @@ class PhotoSearchController {
             DispatchQueue.main.async {
                 checkpoint.remoteUrl = photoUrl
             }
+            
+            strongSelf.runningTasks[url] = nil
         }
         
         task.resume()
+        runningTasks[url] = task
     }
  }
