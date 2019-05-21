@@ -46,6 +46,12 @@ class CheckpointController: NSObject {
                 checkpoint.date = Date()
                 checkpoint.latitude = location.coordinate.latitude
                 checkpoint.longitude = location.coordinate.longitude
+                
+                do {
+                    try self.managedObjectContext.save()
+                } catch {
+                    fatalError("Failure to save context: \(error)")
+                }
             }
         }
     }
@@ -99,15 +105,9 @@ extension CheckpointController: CLLocationManagerDelegate {
             return
         }
         
-        if lastLocation == nil {
-            // An attempt to let the location settle down before using it
-            debouncer.schedule { [unowned self] in
-                self.lastLocation = location
-            }
-            
-            return
+        // An attempt to let the location settle down before using it
+        debouncer.schedule { [unowned self] in
+            self.lastLocation = location
         }
-        
-        self.lastLocation = location
     }
 }
