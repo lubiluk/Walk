@@ -6,6 +6,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -35,23 +36,34 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <view key="tableHeaderView" contentMode="scaleToFill" id="zzd-Kz-DLP">
+                            <rect key="frame" x="0.0" y="0.0" width="414" height="4"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        </view>
+                        <view key="tableFooterView" contentMode="scaleToFill" id="2Yv-MT-9tD">
+                            <rect key="frame" x="0.0" y="262" width="414" height="4"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <viewLayoutGuide key="safeArea" id="MDR-Jv-yos"/>
+                        </view>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="PhotoCell" rowHeight="230" id="xiV-zK-xG4" customClass="PhotoTableViewCell" customModule="Walk" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="28" width="414" height="230"/>
+                                <rect key="frame" x="0.0" y="32" width="414" height="230"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="xiV-zK-xG4" id="tnj-Lu-bmb">
                                     <rect key="frame" x="0.0" y="0.0" width="414" height="230"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="L2K-7u-aaA">
-                                            <rect key="frame" x="20" y="11" width="374" height="208"/>
+                                            <rect key="frame" x="8" y="4" width="398" height="222"/>
                                         </imageView>
                                     </subviews>
                                     <constraints>
-                                        <constraint firstItem="L2K-7u-aaA" firstAttribute="leading" secondItem="tnj-Lu-bmb" secondAttribute="leadingMargin" id="CvJ-Le-lWo"/>
-                                        <constraint firstItem="L2K-7u-aaA" firstAttribute="top" secondItem="tnj-Lu-bmb" secondAttribute="topMargin" id="DUO-Ct-bke"/>
-                                        <constraint firstAttribute="trailingMargin" secondItem="L2K-7u-aaA" secondAttribute="trailing" id="IOT-P1-Ihd"/>
-                                        <constraint firstAttribute="bottomMargin" secondItem="L2K-7u-aaA" secondAttribute="bottom" id="hqF-0n-moz"/>
+                                        <constraint firstItem="L2K-7u-aaA" firstAttribute="leading" secondItem="tnj-Lu-bmb" secondAttribute="leading" constant="8" id="CvJ-Le-lWo"/>
+                                        <constraint firstItem="L2K-7u-aaA" firstAttribute="top" secondItem="tnj-Lu-bmb" secondAttribute="top" constant="4" id="DUO-Ct-bke"/>
+                                        <constraint firstAttribute="trailing" secondItem="L2K-7u-aaA" secondAttribute="trailing" constant="8" id="IOT-P1-Ihd"/>
+                                        <constraint firstAttribute="bottom" secondItem="L2K-7u-aaA" secondAttribute="bottom" constant="4" id="hqF-0n-moz"/>
                                     </constraints>
                                 </tableViewCellContentView>
                                 <connections>

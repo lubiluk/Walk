@@ -58,9 +58,11 @@ class PhotosTableViewController: UITableViewController {
         })
         
         // Retry searches and downloads that may fail due to network problems
-        let appObserver = NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main) { [unowned self] _ in
+        let appObserver = NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { [unowned self] _ in
             self.photoSearchController.retrySearches()
             self.photoDownloadController.retryDownloads()
+            
+            self.tableView.scrollRectToVisible(CGRect(x: 0, y: 0, width: 1, height: 1), animated: false)
         }
         
         observers = [controllerObserver, appObserver]

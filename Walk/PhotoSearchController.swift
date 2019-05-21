@@ -64,7 +64,7 @@ class PhotoSearchController {
             fatalError("Missing Flickr API key")
         }
         
-        let searchUrl = "https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=\(apiKey)&content_type=1&lat=\(checkpoint.latitude)&lon=\(checkpoint.longitude)&radius=0.1&radius_units=km&extras=url_l,url_o,url_m&per_page=1&page=1&format=json&nojsoncallback=1"
+        let searchUrl = "https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=\(apiKey)&content_type=1&lat=\(checkpoint.latitude)&lon=\(checkpoint.longitude)&radius=0.06&radius_units=km&extras=url_l,url_o,url_m&per_page=1&page=1&format=json&nojsoncallback=1"
         
         guard let url = URL(string: searchUrl) else {
             assertionFailure("Invalid URL")

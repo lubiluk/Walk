@@ -69,7 +69,7 @@ class PhotoDownloadController {
         let task = URLSession.shared.downloadTask(with: remoteUrl) { (url, response, error) in
             if let error = error {
                 if let error = error as NSError?, error.domain == NSURLErrorDomain && error.code == NSURLErrorNotConnectedToInternet {
-                    // Try again later
+                    // Network unavailable, let's try again later
                     return
                 }
                 
