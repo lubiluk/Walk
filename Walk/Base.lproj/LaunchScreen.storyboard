@@ -21,7 +21,7 @@
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                     <navigationItem key="navigationItem" id="0Mb-Qe-pDK">
-                        <barButtonItem key="rightBarButtonItem" title="Start" id="MOB-3g-Edf"/>
+                        <barButtonItem key="rightBarButtonItem" enabled="NO" title="Start" id="MOB-3g-Edf"/>
                     </navigationItem>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="iYj-Kq-Ea1" userLabel="First Responder" sceneMemberID="firstResponder"/>

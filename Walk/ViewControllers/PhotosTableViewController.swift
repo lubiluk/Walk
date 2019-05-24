@@ -20,7 +20,7 @@ class PhotosTableViewController: UITableViewController {
     
     lazy var fetchedResultsController: NSFetchedResultsController<Checkpoint> = {
         let request = NSFetchRequest<Checkpoint>(entityName: Checkpoint.entityName)
-        request.predicate = NSPredicate(format: "localPath != nil")
+        request.predicate = NSPredicate(format: "localBookmark != nil")
         let sort = NSSortDescriptor(key: "date", ascending: false)
         request.sortDescriptors = [sort]
         
@@ -67,6 +67,14 @@ class PhotosTableViewController: UITableViewController {
         }
         
         observers = [controllerObserver, appObserver]
+
+        photoSearchController.retrySearches()
+        photoDownloadController.retryDownloads()
+        
+        photoSearchController.startSearching()
+        photoDownloadController.startDownloading()
+        
+        tableView.reloadData()
     }
     
     private func updateViews() {
@@ -113,12 +121,8 @@ class PhotosTableViewController: UITableViewController {
             tableView.reloadData()
             
             checkpointController.startTracking()
-            photoSearchController.startSearching()
-            photoDownloadController.startDownloading()
         case .running:
             checkpointController.stopTracking()
-            photoSearchController.stopSearching()
-            photoDownloadController.stopDownloading()
         }
     }
     
@@ -142,15 +146,14 @@ class PhotosTableViewController: UITableViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: "PhotoCell", for: indexPath) as! PhotoTableViewCell
         let checkpoint = fetchedResultsController.object(at: indexPath)
         
-        if let path = checkpoint.localPath {
+        if let bookmark = checkpoint.localBookmark,
+            let url = try? NSURL(resolvingBookmarkData: bookmark, options: .withoutUI, relativeTo: nil, bookmarkDataIsStale: nil),
+            let path = url.path {
             cell.photoImageView.image = UIImage(contentsOfFile: path)
         } else {
             // Empty photo indicates error. In the future we could add an option to retry download of failed photos.
             cell.photoImageView.image = nil
         }
-        
-//        cell.increasedTopMargin = (indexPath.row == 0)
-//        cell.increasedBottomMargin = (indexPath.row == fetchedResultsController.fetchedObjects!.count - 1)
         
         return cell
     }

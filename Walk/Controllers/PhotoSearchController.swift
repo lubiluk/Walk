@@ -14,7 +14,7 @@ class PhotoSearchController {
     var managedObjectContext: NSManagedObjectContext!
     
     private var observer: NSObjectProtocol?
-    private var runningTasks = [URL:URLSessionDataTask]()
+    private var runningTasks = [Checkpoint:URLSessionDataTask]()
     
     deinit {
         stopSearching()
@@ -67,13 +67,17 @@ class PhotoSearchController {
             return
         }
         
-        if runningTasks[url] != nil {
+        if runningTasks[checkpoint] != nil {
             return
         }
         
         let task = URLSession.shared.dataTask(with: url) { [weak self] (data, response, error) in
             guard let strongSelf = self else {
                 return
+            }
+            
+            defer {
+                strongSelf.runningTasks[checkpoint] = nil
             }
             
             guard error == nil else {
@@ -105,11 +109,9 @@ class PhotoSearchController {
             DispatchQueue.main.async {
                 checkpoint.remoteUrl = photoUrl
             }
-            
-            strongSelf.runningTasks[url] = nil
         }
         
+        runningTasks[checkpoint] = task
         task.resume()
-        runningTasks[url] = task
     }
  }

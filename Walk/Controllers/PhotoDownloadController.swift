@@ -14,7 +14,7 @@ class PhotoDownloadController {
     var managedObjectContext: NSManagedObjectContext!
     
     private var observer: NSObjectProtocol?
-    private var runningTasks = [URL:URLSessionDownloadTask]()
+    private var runningTasks = [Checkpoint:URLSessionDownloadTask]()
     
     deinit {
         stopDownloading()
@@ -43,7 +43,7 @@ class PhotoDownloadController {
     
     private func download() {
         let request = NSFetchRequest<Checkpoint>(entityName: Checkpoint.entityName)
-        request.predicate = NSPredicate(format: "remoteUrl != nil AND localPath = nil AND isFailed = NO")
+        request.predicate = NSPredicate(format: "remoteUrl != nil AND localBookmark = nil AND isFailed = NO")
         
         do {
             let checkpoints = try self.managedObjectContext.fetch(request)
@@ -62,13 +62,17 @@ class PhotoDownloadController {
             return
         }
         
-        if runningTasks[remoteUrl] != nil {
+        if runningTasks[checkpoint] != nil {
             return
         }
         
         let task = URLSession.shared.downloadTask(with: remoteUrl) { [weak self] (url, response, error) in
             guard let strongSelf = self else {
                 return
+            }
+            
+            defer {
+                strongSelf.runningTasks[checkpoint] = nil
             }
             
             if let error = error {
@@ -106,18 +110,24 @@ class PhotoDownloadController {
                     try fileManager.moveItem(at: url, to: savedUrl)
                 }
                 
-                DispatchQueue.main.async {
-                    checkpoint.localPath = savedUrl.path
-                }
+                let bookmark = try savedUrl.bookmarkData(options: .suitableForBookmarkFile, includingResourceValuesForKeys: nil, relativeTo: nil)
                 
-                strongSelf.runningTasks[remoteUrl] = nil
+                DispatchQueue.main.async {
+                    checkpoint.localBookmark = bookmark
+                    
+                    do {
+                        try strongSelf.managedObjectContext.save()
+                    } catch {
+                        fatalError("Failure to save context: \(error)")
+                    }
+                }
             } catch {
                checkpoint.isFailed = true
             }
         }
         
+        runningTasks[checkpoint] = task
         task.resume()
-        runningTasks[remoteUrl] = task
     }
     
     func deleteAllPhotos() {
